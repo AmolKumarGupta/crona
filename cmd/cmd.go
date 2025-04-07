@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/AmolKumarGupta/crona/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Short: "Cron Advanced",
 	Long:  `Crona is a experimental scheduler manager`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("running...")
+		internal.NewCron().Start()
 	},
 }
 
