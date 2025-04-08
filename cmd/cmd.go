@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/AmolKumarGupta/crona/internal"
@@ -19,7 +20,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		slog.Error(fmt.Sprintf("%s", err))
 		os.Exit(1)
 	}
 }
