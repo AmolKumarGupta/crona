@@ -31,7 +31,12 @@ func (p ParseOptions) MatchSecond(t time.Time) bool {
 	}
 
 	s := t.Second()
-	return p.Second == string(rune(s))
+	d, err := strconv.Atoi(p.Second)
+	if err != nil {
+		return false
+	}
+
+	return d == s
 }
 
 func (p ParseOptions) MatchMinute(t time.Time) bool {
@@ -39,8 +44,13 @@ func (p ParseOptions) MatchMinute(t time.Time) bool {
 		return true
 	}
 
-	m := t.Month()
-	return p.Minute == string(rune(m))
+	m := t.Minute()
+	d, err := strconv.Atoi(p.Minute)
+	if err != nil {
+		return false
+	}
+
+	return d == int(m)
 }
 
 func (p ParseOptions) MatchHour(t time.Time) bool {
@@ -49,7 +59,12 @@ func (p ParseOptions) MatchHour(t time.Time) bool {
 	}
 
 	h := t.Hour()
-	return p.Hour == string(rune(h))
+	d, err := strconv.Atoi(p.Hour)
+	if err != nil {
+		return false
+	}
+
+	return d == h
 }
 
 func (p ParseOptions) MatchDay(t time.Time) bool {
@@ -57,8 +72,13 @@ func (p ParseOptions) MatchDay(t time.Time) bool {
 		return true
 	}
 
-	d := t.Day()
-	return p.Dom == string(rune(d))
+	day := t.Day()
+	d, err := strconv.Atoi(p.Dom)
+	if err != nil {
+		return false
+	}
+
+	return d == day
 }
 
 func (p ParseOptions) MatchMonth(t time.Time) bool {
@@ -67,7 +87,12 @@ func (p ParseOptions) MatchMonth(t time.Time) bool {
 	}
 
 	m := t.Month()
-	return p.Month == string(rune(m))
+	d, err := strconv.Atoi(p.Month)
+	if err != nil {
+		return false
+	}
+
+	return d == int(m)
 }
 
 func (p ParseOptions) MatchWeek(t time.Time) bool {
@@ -76,7 +101,12 @@ func (p ParseOptions) MatchWeek(t time.Time) bool {
 	}
 
 	w := t.Weekday()
-	return p.Dow == string(rune(w))
+	d, err := strconv.Atoi(p.Dow)
+	if err != nil {
+		return false
+	}
+
+	return d == int(w)
 }
 
 type bound struct {
