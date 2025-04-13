@@ -13,7 +13,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "crona",
 	Short: "Cron Advanced",
-	Long:  `Crona is a experimental scheduler manager`,
+	Long:  `Crona is a experimental job scheduler`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		fileDriver := &parser.FileDriver{}

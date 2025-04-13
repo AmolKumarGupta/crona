@@ -75,14 +75,21 @@ func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
 		return val >= start && val <= end
 	}
 
-	if isFractionOf(str, bnd) {
+	if isStepRange(str, bnd) {
 		str := strings.TrimPrefix(str, "*/")
 		num, err := strconv.Atoi(str)
 		if err != nil {
 			return false
 		}
 
-		return (val+bnd.Min)%num == 0
+		offset := bnd.Min
+		ranges := []int{}
+
+		for i := offset; i <= bnd.Max; i += num {
+			ranges = append(ranges, i)
+		}
+
+		return slices.Contains(ranges, val)
 	}
 
 	s := val
@@ -209,9 +216,9 @@ func isRange(str string, bnd bound) bool {
 	return start >= bnd.Min && end <= bnd.Max && start <= end
 }
 
-// isFractionOf checks if the string is in the format "*/N"
+// isStepRange checks if the string is in the format "*/N"
 // where N is a number within the specified bounds.
-func isFractionOf(str string, bnd bound) bool {
+func isStepRange(str string, bnd bound) bool {
 	if !strings.HasPrefix(str, "*/") {
 		return false
 	}
