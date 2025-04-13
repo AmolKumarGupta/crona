@@ -2,7 +2,9 @@ package parser
 
 import (
 	"errors"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,92 +23,75 @@ type ParseOptions struct {
 	Flags  []Flag
 }
 
+func (p ParseOptions) MatchSecond(t time.Time) bool {
+	return p.matchTimeValue(t.Second(), p.Second, SecondBound)
+}
+
+func (p ParseOptions) MatchMinute(t time.Time) bool {
+	return p.matchTimeValue(t.Minute(), p.Minute, MinuteBound)
+}
+
+func (p ParseOptions) MatchHour(t time.Time) bool {
+	return p.matchTimeValue(t.Hour(), p.Hour, HourBound)
+}
+
+func (p ParseOptions) MatchDay(t time.Time) bool {
+	return p.matchTimeValue(t.Day(), p.Dom, DomBound)
+}
+
+func (p ParseOptions) MatchMonth(t time.Time) bool {
+	return p.matchTimeValue(int(t.Month()), p.Month, MonthBound)
+}
+
+func (p ParseOptions) MatchWeek(t time.Time) bool {
+	return p.matchTimeValue(int(t.Weekday()), p.Dow, DowBound)
+}
+
 func (p ParseOptions) MatchTime(t time.Time) bool {
 	return p.MatchSecond(t) && p.MatchMinute(t) && p.MatchHour(t) && p.MatchDay(t) && p.MatchMonth(t) && p.MatchWeek(t)
 }
 
-func (p ParseOptions) MatchSecond(t time.Time) bool {
-	if p.Second == "*" {
+func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
+	if isAllUnit(str) {
 		return true
 	}
 
-	s := t.Second()
-	d, err := strconv.Atoi(p.Second)
+	if isMultipleValues(str, bnd) {
+		items := strings.Split(str, ",")
+		return slices.Contains(items, strconv.Itoa(val))
+	}
+
+	if isRange(str, bnd) {
+		nums := strings.Split(str, "-")
+		start, err := strconv.Atoi(nums[0])
+		if err != nil {
+			return false
+		}
+
+		end, err := strconv.Atoi(nums[1])
+		if err != nil {
+			return false
+		}
+		return val >= start && val <= end
+	}
+
+	if isFractionOf(str, bnd) {
+		str := strings.TrimPrefix(str, "*/")
+		num, err := strconv.Atoi(str)
+		if err != nil {
+			return false
+		}
+
+		return val%num == 0
+	}
+
+	s := val
+	d, err := strconv.Atoi(str)
 	if err != nil {
 		return false
 	}
 
 	return d == s
-}
-
-func (p ParseOptions) MatchMinute(t time.Time) bool {
-	if p.Minute == "*" {
-		return true
-	}
-
-	m := t.Minute()
-	d, err := strconv.Atoi(p.Minute)
-	if err != nil {
-		return false
-	}
-
-	return d == int(m)
-}
-
-func (p ParseOptions) MatchHour(t time.Time) bool {
-	if p.Hour == "*" {
-		return true
-	}
-
-	h := t.Hour()
-	d, err := strconv.Atoi(p.Hour)
-	if err != nil {
-		return false
-	}
-
-	return d == h
-}
-
-func (p ParseOptions) MatchDay(t time.Time) bool {
-	if p.Dom == "*" {
-		return true
-	}
-
-	day := t.Day()
-	d, err := strconv.Atoi(p.Dom)
-	if err != nil {
-		return false
-	}
-
-	return d == day
-}
-
-func (p ParseOptions) MatchMonth(t time.Time) bool {
-	if p.Month == "*" {
-		return true
-	}
-
-	m := t.Month()
-	d, err := strconv.Atoi(p.Month)
-	if err != nil {
-		return false
-	}
-
-	return d == int(m)
-}
-
-func (p ParseOptions) MatchWeek(t time.Time) bool {
-	if p.Dow == "*" {
-		return true
-	}
-
-	w := t.Weekday()
-	d, err := strconv.Atoi(p.Dow)
-	if err != nil {
-		return false
-	}
-
-	return d == int(w)
 }
 
 type bound struct {
@@ -168,4 +153,75 @@ func (b bound) Validate(value string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// isAllUnit checks if the string is a wildcard "*"
+// indicating that all values are accepted.
+func isAllUnit(str string) bool {
+	return str == "*"
+}
+
+// isMultipleValues checks if the string contains multiple values separated by commas.
+// It also checks if each value is within the specified bounds.
+func isMultipleValues(str string, bnd bound) bool {
+	items := strings.Split(str, ",")
+	if !(len(items) > 1) {
+		return false
+	}
+
+	for _, item := range items {
+		num, err := strconv.Atoi(item)
+
+		if err != nil {
+			return false
+		}
+
+		if num < bnd.Min || num > bnd.Max {
+			return false
+		}
+	}
+
+	return true
+}
+
+// isRange checks if the string is in the format "N-M"
+// where N and M are numbers within the specified bounds.
+func isRange(str string, bnd bound) bool {
+	if !strings.Contains(str, "-") {
+		return false
+	}
+
+	nums := strings.Split(str, "-")
+
+	if len(nums) != 2 {
+		return false
+	}
+
+	start, err := strconv.Atoi(nums[0])
+	if err != nil {
+		return false
+	}
+	end, err := strconv.Atoi(nums[1])
+	if err != nil {
+		return false
+	}
+
+	return start >= bnd.Min && end <= bnd.Max && start <= end
+}
+
+// isFractionOf checks if the string is in the format "*/N"
+// where N is a number within the specified bounds.
+func isFractionOf(str string, bnd bound) bool {
+	if !strings.HasPrefix(str, "*/") {
+		return false
+	}
+
+	str = strings.TrimPrefix(str, "*/")
+
+	num, err := strconv.Atoi(str)
+	if err != nil {
+		return false
+	}
+
+	return num >= bnd.Min && num <= bnd.Max
 }
