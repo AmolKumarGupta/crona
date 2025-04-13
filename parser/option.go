@@ -82,7 +82,7 @@ func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
 			return false
 		}
 
-		return val%num == 0
+		return (val+bnd.Min)%num == 0
 	}
 
 	s := val
