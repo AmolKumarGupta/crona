@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -290,6 +291,44 @@ func TestMatchWeek(t *testing.T) {
 
 			if got != test.want {
 				t.Errorf("opt.MatchWeek(%d) = %v; want %v", test.input, got, test.want)
+			}
+		})
+	}
+}
+
+func TestMatchTime(t *testing.T) {
+	var tests = []struct {
+		val   []string
+		input time.Time
+		want  bool
+	}{
+		{[]string{"*", "*", "*", "*", "*", "*"}, time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "9-17", "*", "*", "*"}, time.Date(2023, 10, 1, 10, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "9-17", "*", "*", "*"}, time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), false},
+		{[]string{"0", "0", "0", "*", "*", "*"}, time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "0", "*", "*", "*"}, time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "0", "*", "*", "0"}, time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "0", "*", "*", "0"}, time.Date(2023, 10, 8, 0, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "0", "1", "*/3", "*"}, time.Date(2023, 9, 1, 0, 0, 0, 0, time.UTC), false},
+		{[]string{"0", "0", "0", "1", "*/3", "*"}, time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), true},
+		{[]string{"0", "0", "0", "1", "*/3", "*"}, time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), false},
+	}
+
+	opt := &ParseOptions{}
+
+	for _, test := range tests {
+		t.Run(strings.Join(test.val, " "), func(t *testing.T) {
+			opt.Second = test.val[0]
+			opt.Minute = test.val[1]
+			opt.Hour = test.val[2]
+			opt.Dom = test.val[3]
+			opt.Month = test.val[4]
+			opt.Dow = test.val[5]
+
+			got := opt.MatchTime(test.input)
+
+			if got != test.want {
+				t.Errorf("opt.MatchTime(%v) = %v; want %v", test.input, got, test.want)
 			}
 		})
 	}
