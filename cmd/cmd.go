@@ -6,14 +6,35 @@ import (
 	"os"
 
 	"github.com/AmolKumarGupta/crona/internal"
+	"github.com/AmolKumarGupta/crona/parser"
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "crona",
 	Short: "Cron Advanced",
-	Long:  `Crona is a experimental scheduler manager`,
+	Long:  `Crona is a experimental job scheduler`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		fileDriver := &parser.FileDriver{}
+		if err := fileDriver.Init(); err != nil {
+			slog.Error(fmt.Sprintf("error initializing file driver: %s", err))
+			os.Exit(1)
+		}
+
+		tasks, err := fileDriver.Parse()
+
+		if err != nil {
+			slog.Error(fmt.Sprintf("error parsing config: %s", err))
+			os.Exit(1)
+		}
+
+		tm := parser.GetTaskManager()
+		for _, task := range tasks {
+			tm.AddTask(task)
+			// slog.Info("task", "task", task)
+		}
+
 		internal.NewCron().Start()
 	},
 }

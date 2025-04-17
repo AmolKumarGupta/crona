@@ -3,6 +3,8 @@ package internal
 import (
 	"fmt"
 	"time"
+
+	"github.com/AmolKumarGupta/crona/parser"
 )
 
 type Cron struct {
@@ -20,14 +22,23 @@ func (c *Cron) Start() {
 		return
 	}
 
+	tm := parser.GetTaskManager()
+
 	for {
 		var timer time.Timer = *time.NewTimer(time.Second)
 		<-timer.C
 
+		tasks := tm.Next()
+
+		if len(tasks) == 0 {
+			continue
+		}
+
 		fmt.Printf("running at %s\n", time.Now())
-		go func() {
-			job := NewJob("php", []string{"/home/amol/workspace/go-space/crona/example/hello-world.php"})
-			job.Run()
-		}()
+		for _, task := range tasks {
+			go func() {
+				task.Job.Run()
+			}()
+		}
 	}
 }
