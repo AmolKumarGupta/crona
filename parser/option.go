@@ -146,7 +146,19 @@ var (
 )
 
 func (b bound) Validate(value string) (bool, error) {
-	if value == "*" {
+	if isAllUnit(value) {
+		return true, nil
+	}
+
+	if isMultipleValues(value, b) {
+		return true, nil
+	}
+
+	if isRange(value, b) {
+		return true, nil
+	}
+
+	if isStepRange(value, b) {
 		return true, nil
 	}
 

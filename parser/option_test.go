@@ -333,3 +333,28 @@ func TestMatchTime(t *testing.T) {
 		})
 	}
 }
+
+func TestValidate(t *testing.T) {
+	var tests = []struct {
+		input string
+		want  bool
+	}{
+		{"*", true},
+		{"1-5", true},
+		{"1,5", true},
+		{"*/3", true},
+		{"abc", false},
+		{"1000", false},
+		{"1_5", false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			got, _ := SecondBound.Validate(test.input)
+
+			if got != test.want {
+				t.Errorf("SecondBound.Validate(%s) = %v; want %v", test.input, got, test.want)
+			}
+		})
+	}
+}
