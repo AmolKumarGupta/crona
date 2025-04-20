@@ -18,6 +18,7 @@ func TestMatchSecond(t *testing.T) {
 		{"10,20,30", 30, true},
 		{"10,20,45", 30, false},
 		{"10,20,99", 30, false},
+		{"15,20", 15, true},
 
 		{"0-10", 0, true},
 		{"0-10", 30, false},

@@ -25,7 +25,7 @@ func (c *Cron) Start() {
 	tm := parser.GetTaskManager()
 
 	for {
-		var timer time.Timer = *time.NewTimer(time.Second)
+		var timer = *time.NewTimer(time.Second)
 		<-timer.C
 
 		tasks := tm.Next()
