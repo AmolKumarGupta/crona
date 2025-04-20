@@ -184,7 +184,7 @@ func isAllUnit(str string) bool {
 // It also checks if each value is within the specified bounds.
 func isMultipleValues(str string, bnd bound) bool {
 	items := strings.Split(str, ",")
-	if !(len(items) > 1) {
+	if len(items) <= 1 {
 		return false
 	}
 

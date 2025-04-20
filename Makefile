@@ -1,6 +1,7 @@
 BINARY_NAME=crona
 SRC=main.go
 BIN_DIR=bin
+GOPATH=$(shell go env GOPATH)
 
 .PHONY: all build run clean
 
@@ -18,3 +19,6 @@ run:
 clean:
 	@echo "Cleaning the bin directory..."
 	@rm $(BIN_DIR)/$(BINARY_NAME)
+
+lint:
+	@$(GOPATH)/bin/golangci-lint run
