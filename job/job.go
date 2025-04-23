@@ -2,6 +2,7 @@ package job
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 )
@@ -23,7 +24,7 @@ func (j *Job) Run() {
 	cmd.Stdout = os.Stdout
 
 	if err := cmd.Run(); err != nil {
-		fmt.Println(err)
+		slog.Error(fmt.Sprintf("error running job: %s:", err))
 		return
 	}
 }

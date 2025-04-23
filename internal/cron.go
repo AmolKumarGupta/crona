@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/AmolKumarGupta/crona/parser"
@@ -34,7 +34,7 @@ func (c *Cron) Start() {
 			continue
 		}
 
-		fmt.Printf("running at %s\n", time.Now())
+		slog.Info("running")
 		for _, task := range tasks {
 			go func() {
 				task.Job.Run()
