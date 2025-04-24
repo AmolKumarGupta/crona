@@ -10,6 +10,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	rootCmd.Flags().StringP("config", "c", "", "Path to the config file")
+	// rootCmd.Flags().StringP("log-level", "l", "info", "Log level (debug, info, warn, error)")
+	// rootCmd.Flags().StringP("log-file", "f", "", "Path to the log file")
+	// rootCmd.Flags().BoolP("daemon", "d", false, "Run as a daemon")
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "crona",
 	Short: "Cron Advanced",
@@ -17,6 +24,17 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		fileDriver := &parser.FileDriver{}
+
+		if cmd.Flag("config").Changed {
+			configPath, err := cmd.Flags().GetString("config")
+			if err != nil {
+				slog.Error(fmt.Sprintf("error getting config path: %s", err))
+				os.Exit(1)
+			}
+
+			fileDriver.FilePath = configPath
+		}
+
 		if err := fileDriver.Init(); err != nil {
 			slog.Error(fmt.Sprintf("error initializing file driver: %s", err))
 			os.Exit(1)

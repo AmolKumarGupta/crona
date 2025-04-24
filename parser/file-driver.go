@@ -11,28 +11,32 @@ import (
 )
 
 type FileDriver struct {
-	filePath string
+	FilePath string
 }
 
 func (f *FileDriver) Init() error {
+	if f.FilePath != "" {
+		return nil
+	}
+
 	dir, err := os.Getwd()
 	if err != nil {
 		return errors.New("unable to get current working directory")
 	}
 
-	f.filePath = fmt.Sprintf("%s/%s", dir, ".crona")
+	f.FilePath = fmt.Sprintf("%s/%s", dir, ".crona")
 
-	if _, err := os.Stat(f.filePath); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(f.FilePath); errors.Is(err, os.ErrNotExist) {
 		return errors.New("file does not exist")
 	}
-
-	slog.Info("current config", "file", f.filePath)
 
 	return nil
 }
 
 func (f *FileDriver) Parse() ([]Task, error) {
-	bytes, err := os.ReadFile(f.filePath)
+	slog.Info("current config", "file", f.FilePath)
+
+	bytes, err := os.ReadFile(f.FilePath)
 	if err != nil {
 		return nil, errors.New("file does not exist")
 	}
