@@ -22,9 +22,10 @@ func NewJob(command string, args []string) *Job {
 func (j *Job) Run() {
 	cmd := exec.Command(j.command, j.args...)
 	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		slog.Error(fmt.Sprintf("error running job: %s:", err))
+		slog.Error(fmt.Sprintf("running job: %s:", err))
 		return
 	}
 }
