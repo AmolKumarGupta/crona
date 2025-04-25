@@ -22,20 +22,9 @@ var rootCmd = &cobra.Command{
 	Short: "Cron Advanced",
 	Long:  `Crona is a experimental job scheduler`,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		fileDriver := &parser.FileDriver{}
 
-		if cmd.Flag("config").Changed {
-			configPath, err := cmd.Flags().GetString("config")
-			if err != nil {
-				slog.Error(fmt.Sprintf("error getting config path: %s", err))
-				os.Exit(1)
-			}
-
-			fileDriver.FilePath = configPath
-		}
-
-		if err := fileDriver.Init(); err != nil {
+		if err := fileDriver.Init(cmd); err != nil {
 			slog.Error(fmt.Sprintf("error initializing file driver: %s", err))
 			os.Exit(1)
 		}

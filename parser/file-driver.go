@@ -8,13 +8,23 @@ import (
 	"strings"
 
 	"github.com/AmolKumarGupta/crona/job"
+	"github.com/spf13/cobra"
 )
 
 type FileDriver struct {
 	FilePath string
 }
 
-func (f *FileDriver) Init() error {
+func (f *FileDriver) Init(cmd *cobra.Command) error {
+	if cmd.Flag("config").Changed {
+		configPath, err := cmd.Flags().GetString("config")
+		if err != nil {
+			return err
+		}
+
+		f.FilePath = configPath
+	}
+
 	if f.FilePath != "" {
 		return nil
 	}
