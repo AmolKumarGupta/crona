@@ -25,10 +25,12 @@ func (c *Cron) Start() {
 	tm := parser.GetTaskManager()
 
 	for {
-		var timer = *time.NewTimer(time.Second)
-		<-timer.C
+		slog.Debug("tick")
 
-		tasks := tm.Next()
+		var timer = *time.NewTimer(time.Second)
+		now := <-timer.C
+
+		tasks := tm.Next(now)
 
 		if len(tasks) == 0 {
 			continue

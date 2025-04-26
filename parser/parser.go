@@ -47,9 +47,7 @@ func (tm *TaskManager) AddTask(task Task) {
 // 	}
 // }
 
-func (tm *TaskManager) Next() []Task {
-	now := time.Now()
-
+func (tm *TaskManager) Next(now time.Time) []Task {
 	var curTasks []Task
 
 	for _, task := range tm.Tasks {
