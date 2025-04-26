@@ -3,6 +3,7 @@
 ## 0.0.2 - release
 
 ### Feature
+ - add flag for log level [(#5)](https://github.com/AmolKumarGupta/crona/issues/5)
  - add config flag to command [(#3)](https://github.com/AmolKumarGupta/crona/issues/3)
  - refactor: replace fmt with log/slog
 
