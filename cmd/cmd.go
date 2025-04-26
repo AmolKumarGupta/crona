@@ -15,6 +15,8 @@ func init() {
 	rootCmd.Flags().StringP("log-level", "l", "error", "Log level (debug, info, warn, error)")
 	// rootCmd.Flags().StringP("log-file", "f", "", "Path to the log file")
 	// rootCmd.Flags().BoolP("daemon", "d", false, "Run as a daemon")
+
+	rootCmd.AddCommand(versionCmd)
 }
 
 var rootCmd = &cobra.Command{
