@@ -14,7 +14,7 @@ build:
 	@go build -o $(BIN_DIR)/$(BINARY_NAME) $(SRC)
 
 run:
-	@$(BIN_DIR)/$(BINARY_NAME)
+	@$(BIN_DIR)/$(BINARY_NAME) -l=info
 
 clean:
 	@echo "Cleaning the bin directory..."

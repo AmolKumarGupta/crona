@@ -10,14 +10,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	rootCmd.Flags().StringP("config", "c", "", "Path to the config file")
+	rootCmd.Flags().StringP("log-level", "l", "error", "Log level (debug, info, warn, error)")
+	// rootCmd.Flags().StringP("log-file", "f", "", "Path to the log file")
+	// rootCmd.Flags().BoolP("daemon", "d", false, "Run as a daemon")
+
+	rootCmd.AddCommand(versionCmd)
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "crona",
 	Short: "Cron Advanced",
 	Long:  `Crona is a experimental job scheduler`,
 	Run: func(cmd *cobra.Command, args []string) {
+		logLevel, err := logLevel(cmd)
+		if err != nil {
+			slog.Error(fmt.Sprintf("error getting log level: %s", err))
+			os.Exit(1)
+		}
+
+		prevLevel := slog.SetLogLoggerLevel(logLevel)
+		defer slog.SetLogLoggerLevel(prevLevel)
 
 		fileDriver := &parser.FileDriver{}
-		if err := fileDriver.Init(); err != nil {
+
+		if err := fileDriver.Init(cmd); err != nil {
 			slog.Error(fmt.Sprintf("error initializing file driver: %s", err))
 			os.Exit(1)
 		}
@@ -32,7 +50,6 @@ var rootCmd = &cobra.Command{
 		tm := parser.GetTaskManager()
 		for _, task := range tasks {
 			tm.AddTask(task)
-			// slog.Info("task", "task", task)
 		}
 
 		internal.NewCron().Start()
