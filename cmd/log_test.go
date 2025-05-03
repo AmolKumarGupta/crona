@@ -6,7 +6,10 @@ import (
 )
 
 func TestLogLevel(t *testing.T) {
-	rootCmd.Flags().Set("log-level", "info")
+	err := rootCmd.Flags().Set("log-level", "info")
+	if err != nil {
+		t.Fatal("expected no error, got", err)
+	}
 
 	level, err := logLevel(rootCmd)
 	if err != nil {
