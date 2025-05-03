@@ -34,6 +34,12 @@ func GetTaskManager() *TaskManager {
 	return tmInstance
 }
 
+func ResetTaskManager() {
+	tmInstance = &TaskManager{
+		Tasks: []Task{},
+	}
+}
+
 func (tm *TaskManager) AddTask(task Task) {
 	tm.Tasks = append(tm.Tasks, task)
 }

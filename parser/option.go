@@ -101,6 +101,15 @@ func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
 	return d == s
 }
 
+func (p ParseOptions) Compare(other ParseOptions) bool {
+	return p.Second == other.Second &&
+		p.Minute == other.Minute &&
+		p.Hour == other.Hour &&
+		p.Dom == other.Dom &&
+		p.Month == other.Month &&
+		p.Dow == other.Dow
+}
+
 type bound struct {
 	Min   int
 	Max   int

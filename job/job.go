@@ -29,3 +29,9 @@ func (j *Job) Run() {
 		return
 	}
 }
+
+func (j Job) Compare(other Job) bool {
+	return j.command == other.command &&
+		len(j.args) == len(other.args) &&
+		(len(j.args) == 0 || j.args[0] == other.args[0])
+}
