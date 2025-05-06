@@ -13,6 +13,23 @@ type Flag struct {
 	Value any
 }
 
+// NOTE: does not work if order is not the same
+func CompareFlags(f1, f2 []Flag) bool {
+	for i, f := range f1 {
+		o := f2[i]
+
+		if f.Label != o.Label {
+			return false
+		}
+
+		if f.Value != o.Value {
+			return false
+		}
+	}
+
+	return true
+}
+
 type ParseOptions struct {
 	Second string
 	Minute string
@@ -107,7 +124,9 @@ func (p ParseOptions) Compare(other ParseOptions) bool {
 		p.Hour == other.Hour &&
 		p.Dom == other.Dom &&
 		p.Month == other.Month &&
-		p.Dow == other.Dow
+		p.Dow == other.Dow &&
+		len(p.Flags) == len(other.Flags) &&
+		(len(p.Flags) == 0 || CompareFlags(p.Flags, other.Flags))
 }
 
 type bound struct {

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type Job struct {
@@ -33,5 +34,5 @@ func (j *Job) Run() {
 func (j Job) Compare(other Job) bool {
 	return j.command == other.command &&
 		len(j.args) == len(other.args) &&
-		(len(j.args) == 0 || j.args[0] == other.args[0])
+		(len(j.args) == 0 || strings.Join(j.args, " ") == strings.Join(other.args, " "))
 }

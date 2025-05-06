@@ -359,3 +359,52 @@ func TestValidate(t *testing.T) {
 		})
 	}
 }
+
+func TestCompare(t *testing.T) {
+	po1 := &ParseOptions{
+		Second: "*",
+		Minute: "*",
+		Hour:   "*",
+		Dom:    "*",
+		Month:  "*",
+		Dow:    "*",
+		Flags: []Flag{
+			{"--test", ""},
+			{"--d", "info"},
+		},
+	}
+
+	po2 := &ParseOptions{
+		Second: "*",
+		Minute: "*",
+		Hour:   "*",
+		Dom:    "*",
+		Month:  "*",
+		Dow:    "*",
+		Flags: []Flag{
+			{"--test", ""},
+			{"--d", "info"},
+		},
+	}
+
+	po3 := &ParseOptions{
+		Second: "*",
+		Minute: "*",
+		Hour:   "*",
+		Dom:    "*",
+		Month:  "*",
+		Dow:    "*",
+		Flags: []Flag{
+			{"--test", ""},
+			{"--d", "debug"},
+		},
+	}
+
+	if !po1.Compare(*po2) {
+		t.Error("po1 should be same as po2", po1, po2)
+	}
+
+	if po1.Compare(*po3) {
+		t.Error("po1 should be not same as po3", po1, po3)
+	}
+}
