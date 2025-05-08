@@ -40,6 +40,26 @@ type ParseOptions struct {
 	Flags  []Flag
 }
 
+func NewParseOptions(
+	Second string,
+	Minute string,
+	Hour string,
+	Dom string,
+	Month string,
+	Dow string,
+	Flags []Flag,
+) *ParseOptions {
+	return &ParseOptions{
+		Second,
+		Minute,
+		Hour,
+		Dom,
+		Month,
+		Dow,
+		Flags,
+	}
+}
+
 func (p ParseOptions) MatchSecond(t time.Time) bool {
 	return p.matchTimeValue(t.Second(), p.Second, SecondBound)
 }
