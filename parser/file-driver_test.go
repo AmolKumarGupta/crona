@@ -1,6 +1,10 @@
 package parser
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/AmolKumarGupta/crona/job"
+)
 
 func TestIsComment(t *testing.T) {
 	tests := []struct {
@@ -65,6 +69,46 @@ func TestSplit(t *testing.T) {
 				if v != test.want[i] {
 					t.Errorf("fd.split('%s')[%d] = '%s'; want '%s'", test.text, i, v, test.want[i])
 				}
+			}
+		})
+	}
+}
+
+func TestAsTask(t *testing.T) {
+	tests := []struct {
+		input string
+		want  Task
+	}{
+		{
+			"* * * * * * php main.php",
+			*NewTask(
+				NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{}),
+				job.NewJob("php", []string{"main.php"}),
+			),
+		},
+		{
+			"0 0 */2 * * * ./sample.sh",
+			*NewTask(
+				NewParseOptions("0", "0", "*/2", "*", "*", "*", []Flag{}),
+				job.NewJob("./sample.sh", []string{}),
+			),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run("AsTask", func(t *testing.T) {
+			fd := &FileDriver{}
+			got, err := fd.asTask(test.input)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if !got.Compare(test.want.ParseOptions) {
+				t.Errorf("fd.asTask('%s') = %v; want %v", test.input, got, test.want)
+			}
+
+			if !got.Job.Compare(test.want.Job) {
+				t.Errorf("fd.asTask('%s') = %v; want %v", test.input, got, test.want)
 			}
 		})
 	}
