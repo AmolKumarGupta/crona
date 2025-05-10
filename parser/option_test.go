@@ -361,44 +361,10 @@ func TestValidate(t *testing.T) {
 }
 
 func TestCompare(t *testing.T) {
-	po1 := &ParseOptions{
-		Second: "*",
-		Minute: "*",
-		Hour:   "*",
-		Dom:    "*",
-		Month:  "*",
-		Dow:    "*",
-		Flags: []Flag{
-			{"--test", ""},
-			{"--d", "info"},
-		},
-	}
-
-	po2 := &ParseOptions{
-		Second: "*",
-		Minute: "*",
-		Hour:   "*",
-		Dom:    "*",
-		Month:  "*",
-		Dow:    "*",
-		Flags: []Flag{
-			{"--test", ""},
-			{"--d", "info"},
-		},
-	}
-
-	po3 := &ParseOptions{
-		Second: "*",
-		Minute: "*",
-		Hour:   "*",
-		Dom:    "*",
-		Month:  "*",
-		Dow:    "*",
-		Flags: []Flag{
-			{"--test", ""},
-			{"--d", "debug"},
-		},
-	}
+	po1 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--test", ""}, {"--d", "info"}})
+	po2 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--test", ""}, {"--d", "info"}})
+	po3 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--test", ""}, {"--d", "debug"}})
+	po4 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--n", ""}, {"--d", "debug"}})
 
 	if !po1.Compare(*po2) {
 		t.Error("po1 should be same as po2", po1, po2)
@@ -406,5 +372,9 @@ func TestCompare(t *testing.T) {
 
 	if po1.Compare(*po3) {
 		t.Error("po1 should be not same as po3", po1, po3)
+	}
+
+	if po1.Compare(*po4) {
+		t.Error("po1 should be not same as po4", po1, po4)
 	}
 }
