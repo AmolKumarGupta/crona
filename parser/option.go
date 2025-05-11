@@ -100,24 +100,16 @@ func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
 
 	if isRange(str, bnd) {
 		nums := strings.Split(str, "-")
-		start, err := strconv.Atoi(nums[0])
-		if err != nil {
-			return false
-		}
+		start, _ := strconv.Atoi(nums[0])
 
-		end, err := strconv.Atoi(nums[1])
-		if err != nil {
-			return false
-		}
+		end, _ := strconv.Atoi(nums[1])
+
 		return val >= start && val <= end
 	}
 
 	if isStepRange(str, bnd) {
 		str := strings.TrimPrefix(str, "*/")
-		num, err := strconv.Atoi(str)
-		if err != nil {
-			return false
-		}
+		num, _ := strconv.Atoi(str)
 
 		offset := bnd.Min
 		ranges := []int{}

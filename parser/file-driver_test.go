@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/AmolKumarGupta/crona/job"
@@ -46,7 +47,7 @@ func TestSplit(t *testing.T) {
 			[]string{},
 		},
 		{
-			"* * * * * * php main.php\n\n\n",
+			"* * * * * * php main.php\n\n//  \n",
 			[]string{"* * * * * * php main.php"},
 		},
 		{
@@ -109,6 +110,40 @@ func TestAsTask(t *testing.T) {
 
 			if !got.Job.Compare(test.want.Job) {
 				t.Errorf("fd.asTask('%s') = %v; want %v", test.input, got, test.want)
+			}
+		})
+	}
+}
+
+func TestAsTaskFailed(t *testing.T) {
+	tests := []struct {
+		input string
+		err   bool
+	}{
+		{"* * * * * * php main.php", false},
+		{"0 0 */2 * * ./sample.sh", true},
+		{"a * * * * * php main.php", true},
+		{"* a * * * * php main.php", true},
+		{"* * a * * * php main.php", true},
+		{"* * * a * * php main.php", true},
+		{"* * * * a * php main.php", true},
+		{"* * * * * a php main.php", true},
+		{"* * * * * *", true},
+		// {"* * * * * * ", true},
+		// {"* * * * * * *", true},
+		// {"* * * * * * * php main.php", true},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("AsTask '%s'", test.input), func(t *testing.T) {
+			fd := &FileDriver{}
+			_, err := fd.asTask(test.input)
+
+			if test.err && err == nil {
+				t.Errorf("it should throw error")
+
+			} else if !test.err && err != nil {
+				t.Errorf("it should not throw error")
 			}
 		})
 	}
