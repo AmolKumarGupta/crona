@@ -27,4 +27,4 @@ go.work.sum
 bin/*
 !*.gitkeep
 
-cover.txt
+coverage.out
