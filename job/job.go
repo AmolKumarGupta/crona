@@ -1,11 +1,10 @@
 package job
 
 import (
-	"fmt"
-	"log/slog"
 	"os"
-	"os/exec"
 	"strings"
+
+	"github.com/AmolKumarGupta/crona/executor"
 )
 
 type Job struct {
@@ -20,15 +19,19 @@ func NewJob(command string, args []string) *Job {
 	}
 }
 
-func (j *Job) Run() {
-	cmd := exec.Command(j.command, j.args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+func (j *Job) Run() error {
+	cmd := executor.New(
+		executor.Name(j.command),
+		executor.Args(j.args),
+		executor.Stdout(os.Stdout),
+		executor.Stderr(os.Stderr),
+	)
 
 	if err := cmd.Run(); err != nil {
-		slog.Error(fmt.Sprintf("running job: %s:", err))
-		return
+		return err
 	}
+
+	return nil
 }
 
 func (j Job) Compare(other Job) bool {
