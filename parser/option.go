@@ -13,6 +13,23 @@ type Flag struct {
 	Value any
 }
 
+// NOTE: does not work if order is not the same
+func CompareFlags(f1, f2 []Flag) bool {
+	for i, f := range f1 {
+		o := f2[i]
+
+		if f.Label != o.Label {
+			return false
+		}
+
+		if f.Value != o.Value {
+			return false
+		}
+	}
+
+	return true
+}
+
 type ParseOptions struct {
 	Second string
 	Minute string
@@ -21,6 +38,26 @@ type ParseOptions struct {
 	Month  string
 	Dow    string
 	Flags  []Flag
+}
+
+func NewParseOptions(
+	Second string,
+	Minute string,
+	Hour string,
+	Dom string,
+	Month string,
+	Dow string,
+	Flags []Flag,
+) *ParseOptions {
+	return &ParseOptions{
+		Second,
+		Minute,
+		Hour,
+		Dom,
+		Month,
+		Dow,
+		Flags,
+	}
 }
 
 func (p ParseOptions) MatchSecond(t time.Time) bool {
@@ -63,24 +100,16 @@ func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
 
 	if isRange(str, bnd) {
 		nums := strings.Split(str, "-")
-		start, err := strconv.Atoi(nums[0])
-		if err != nil {
-			return false
-		}
+		start, _ := strconv.Atoi(nums[0])
 
-		end, err := strconv.Atoi(nums[1])
-		if err != nil {
-			return false
-		}
+		end, _ := strconv.Atoi(nums[1])
+
 		return val >= start && val <= end
 	}
 
 	if isStepRange(str, bnd) {
 		str := strings.TrimPrefix(str, "*/")
-		num, err := strconv.Atoi(str)
-		if err != nil {
-			return false
-		}
+		num, _ := strconv.Atoi(str)
 
 		offset := bnd.Min
 		ranges := []int{}
@@ -99,6 +128,17 @@ func (p ParseOptions) matchTimeValue(val int, str string, bnd bound) bool {
 	}
 
 	return d == s
+}
+
+func (p ParseOptions) Compare(other ParseOptions) bool {
+	return p.Second == other.Second &&
+		p.Minute == other.Minute &&
+		p.Hour == other.Hour &&
+		p.Dom == other.Dom &&
+		p.Month == other.Month &&
+		p.Dow == other.Dow &&
+		len(p.Flags) == len(other.Flags) &&
+		(len(p.Flags) == 0 || CompareFlags(p.Flags, other.Flags))
 }
 
 type bound struct {

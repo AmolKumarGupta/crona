@@ -1,8 +1,11 @@
 # Changelog
 
-## 0.0.2 - release
+## 0.0.2 - 2025-05-12
 
 ### Feature
+ - add test suites
+ - add compare method for `ParseOptions` and `Job` struct
+ - add reset function for task manager
  - add `version` command
  - add flag for log level [(#5)](https://github.com/AmolKumarGupta/crona/issues/5)
  - add config flag to command [(#3)](https://github.com/AmolKumarGupta/crona/issues/3)

@@ -146,6 +146,15 @@ func (f *FileDriver) asTask(str string) (*Task, error) {
 		}
 	}
 
+	cmdString := strings.TrimSpace(strings.Join(chunk[6:], " "))
+	if cmdString == "" {
+		return nil, errors.New("command is empty")
+	}
+
+	if strings.HasPrefix(cmdString, "*") {
+		return nil, errors.New("command is invalid")
+	}
+
 	job := job.NewJob(chunk[6], chunk[7:])
 
 	task := &Task{

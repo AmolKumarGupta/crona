@@ -22,3 +22,7 @@ clean:
 
 lint:
 	@$(GOPATH)/bin/golangci-lint run
+
+coverage: 
+	@go test ./... -coverprofile=coverage.out
+	@go tool cover -html=coverage.out

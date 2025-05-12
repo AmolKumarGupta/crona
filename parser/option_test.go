@@ -19,17 +19,22 @@ func TestMatchSecond(t *testing.T) {
 		{"10,20,45", 30, false},
 		{"10,20,99", 30, false},
 		{"15,20", 15, true},
+		{"15,,20", 15, false},
 
 		{"0-10", 0, true},
 		{"0-10", 30, false},
 		{"10-0", 30, false},
 		{"0-99", 30, false},
+		{"-99", 30, false},
+		{"0-", 30, false},
+		{"0-1-2", 30, false},
 
 		{"*/2", 30, true},
 		{"*/10", 30, true},
 		{"*/30", 30, true},
 		{"*/59", 30, false},
 		{"*/60", 30, false},
+		{"*/", 30, false},
 
 		{"0", 0, true},
 		{"59", 59, true},
@@ -357,5 +362,24 @@ func TestValidate(t *testing.T) {
 				t.Errorf("SecondBound.Validate(%s) = %v; want %v", test.input, got, test.want)
 			}
 		})
+	}
+}
+
+func TestCompare(t *testing.T) {
+	po1 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--test", ""}, {"--d", "info"}})
+	po2 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--test", ""}, {"--d", "info"}})
+	po3 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--test", ""}, {"--d", "debug"}})
+	po4 := NewParseOptions("*", "*", "*", "*", "*", "*", []Flag{{"--n", ""}, {"--d", "debug"}})
+
+	if !po1.Compare(*po2) {
+		t.Error("po1 should be same as po2", po1, po2)
+	}
+
+	if po1.Compare(*po3) {
+		t.Error("po1 should be not same as po3", po1, po3)
+	}
+
+	if po1.Compare(*po4) {
+		t.Error("po1 should be not same as po4", po1, po4)
 	}
 }

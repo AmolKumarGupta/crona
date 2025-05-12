@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -39,7 +40,10 @@ func (c *Cron) Start() {
 		slog.Info("running")
 		for _, task := range tasks {
 			go func() {
-				task.Job.Run()
+				err := task.Job.Run()
+				if err != nil {
+					slog.Error(fmt.Sprintf("running job: %s:", err))
+				}
 			}()
 		}
 	}

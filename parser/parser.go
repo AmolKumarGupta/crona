@@ -15,6 +15,16 @@ type Task struct {
 	Job job.Job
 }
 
+func NewTask(
+	parseOptions *ParseOptions,
+	job *job.Job,
+) *Task {
+	return &Task{
+		*parseOptions,
+		*job,
+	}
+}
+
 var (
 	once       sync.Once
 	tmInstance *TaskManager
@@ -32,6 +42,12 @@ func GetTaskManager() *TaskManager {
 	})
 
 	return tmInstance
+}
+
+func ResetTaskManager() {
+	tmInstance = &TaskManager{
+		Tasks: []Task{},
+	}
 }
 
 func (tm *TaskManager) AddTask(task Task) {
