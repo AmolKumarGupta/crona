@@ -129,21 +129,21 @@ func TestAsTaskFailed(t *testing.T) {
 		{"* * * * a * php main.php", true},
 		{"* * * * * a php main.php", true},
 		{"* * * * * *", true},
-		// {"* * * * * * ", true},
-		// {"* * * * * * *", true},
-		// {"* * * * * * * php main.php", true},
+		{"* * * * * * ", true},
+		{"* * * * * * *", true},
+		{"* * * * * * * php main.php", true},
 	}
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("AsTask '%s'", test.input), func(t *testing.T) {
 			fd := &FileDriver{}
-			_, err := fd.asTask(test.input)
+			task, err := fd.asTask(test.input)
 
 			if test.err && err == nil {
-				t.Errorf("it should throw error")
+				t.Errorf("it should throw error, %v", task)
 
 			} else if !test.err && err != nil {
-				t.Errorf("it should not throw error")
+				t.Errorf("it should not throw error, %v", task)
 			}
 		})
 	}
