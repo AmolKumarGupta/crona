@@ -11,6 +11,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	Resolver.Register("fs", func() Driver {
+		return &FileDriver{}
+	})
+}
+
 type FileDriver struct {
 	FilePath string
 }
