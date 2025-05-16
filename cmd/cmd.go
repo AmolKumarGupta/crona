@@ -16,6 +16,8 @@ func init() {
 	// rootCmd.Flags().StringP("log-file", "f", "", "Path to the log file")
 	// rootCmd.Flags().BoolP("daemon", "d", false, "Run as a daemon")
 
+	rootCmd.Flags().StringP("driver", "r", "fs", "Driver, options: fs, mem")
+
 	rootCmd.AddCommand(versionCmd)
 }
 
@@ -33,14 +35,25 @@ var rootCmd = &cobra.Command{
 		prevLevel := slog.SetLogLoggerLevel(logLevel)
 		defer slog.SetLogLoggerLevel(prevLevel)
 
-		fileDriver := &parser.FileDriver{}
+		// fileDriver := &parser.FileDriver{}
+		driverFlag, err := cmd.Flags().GetString("driver")
+		if err != nil {
+			slog.Error(fmt.Sprintf("error while getting driver flag: %s", err))
+			os.Exit(1)
+		}
 
-		if err := fileDriver.Init(cmd); err != nil {
+		driver, err := parser.Get(driverFlag)
+		if err != nil {
+			slog.Error(fmt.Sprintf("error while getting driver: %s", err))
+			os.Exit(1)
+		}
+
+		if err := driver.Init(cmd); err != nil {
 			slog.Error(fmt.Sprintf("error initializing file driver: %s", err))
 			os.Exit(1)
 		}
 
-		tasks, err := fileDriver.Parse()
+		tasks, err := driver.Parse()
 
 		if err != nil {
 			slog.Error(fmt.Sprintf("error parsing config: %s", err))

@@ -46,9 +46,24 @@ func TestInit(t *testing.T) {
 				t.Errorf("InMemoryDriver.Init() throw error %v", err)
 			}
 
-			if len(driver.Tasks) != len(test.input) {
-				t.Errorf("InMemoryDriver.Task length is %d, want %d", len(driver.Tasks), len(test.input))
+			tasks, _ := driver.Parse()
+
+			if len(tasks) != len(test.input) {
+				t.Errorf("InMemoryDriver.Task length is %d, want %d", len(tasks), len(test.input))
 			}
 		})
+	}
+}
+
+func TestParse(t *testing.T) {
+	parser.DefaultInMemoryTasks = []parser.Task{}
+
+	cmd := &cobra.Command{}
+
+	driver := &parser.InMemoryDriver{}
+	err := driver.Init(cmd)
+
+	if err == nil {
+		t.Errorf("empty tasks should throw error but it didnt")
 	}
 }
