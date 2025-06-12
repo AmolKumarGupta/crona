@@ -35,7 +35,6 @@ var rootCmd = &cobra.Command{
 		prevLevel := slog.SetLogLoggerLevel(logLevel)
 		defer slog.SetLogLoggerLevel(prevLevel)
 
-		// fileDriver := &parser.FileDriver{}
 		driverFlag, err := cmd.Flags().GetString("driver")
 		if err != nil {
 			slog.Error(fmt.Sprintf("error while getting driver flag: %s", err))
@@ -65,7 +64,7 @@ var rootCmd = &cobra.Command{
 			tm.AddTask(task)
 		}
 
-		internal.NewCron().Start()
+		internal.NewCron().Start(cmd.Context())
 	},
 }
 

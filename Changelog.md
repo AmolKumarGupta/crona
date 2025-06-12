@@ -3,6 +3,10 @@
 ## 0.0.3 - release
 
 ### Feature
+ - add in-memory driver [(#8)](https://github.com/AmolKumarGupta/crona/issues/8)
+
+### Fixes
+ - doesn`t write on custom buffer [(#11)](https://github.com/AmolKumarGupta/crona/issues/11)
 
 
 

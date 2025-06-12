@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"time"
@@ -18,33 +19,40 @@ func NewCron() *Cron {
 	}
 }
 
-func (c *Cron) Start() {
+// Accepts a context which allows cancellation to stop the loop.
+func (c *Cron) Start(ctx context.Context) {
 	if c.running {
 		return
 	}
-
+	c.running = true
 	tm := parser.GetTaskManager()
 
 	for {
-		slog.Debug("tick")
+		select {
+		case <-ctx.Done():
+			slog.Info("Cron stopped")
+			return
+		default:
+			slog.Debug("tick")
 
-		var timer = *time.NewTimer(time.Second)
-		now := <-timer.C
+			timer := time.NewTimer(time.Second)
+			now := <-timer.C
 
-		tasks := tm.Next(now)
+			tasks := tm.Next(now)
 
-		if len(tasks) == 0 {
-			continue
-		}
+			if len(tasks) == 0 {
+				continue
+			}
 
-		slog.Info("running")
-		for _, task := range tasks {
-			go func() {
-				err := task.Job.Run()
-				if err != nil {
-					slog.Error(fmt.Sprintf("running job: %s:", err))
-				}
-			}()
+			slog.Info("running")
+			for _, task := range tasks {
+				task := task
+				go func() {
+					if err := task.Job.Run(); err != nil {
+						slog.Error(fmt.Sprintf("running job: %s", err))
+					}
+				}()
+			}
 		}
 	}
 }

@@ -28,7 +28,7 @@ func (d *InMemoryDriver) Init(_ *cobra.Command) error {
 	d.Tasks = DefaultInMemoryTasks
 
 	if len(d.Tasks) == 0 {
-		return errors.New("no task in memroy driver")
+		return errors.New("no task in memory driver")
 	}
 
 	return nil
