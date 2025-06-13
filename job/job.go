@@ -1,11 +1,20 @@
 package job
 
 import (
+	"io"
 	"os"
 	"strings"
 
 	"github.com/AmolKumarGupta/crona/executor"
 )
+
+var (
+	stdOut io.Writer = os.Stdout
+)
+
+func SetJobStdOut(w io.Writer) {
+	stdOut = w
+}
 
 type Job struct {
 	command string
@@ -23,7 +32,7 @@ func (j *Job) Run() error {
 	cmd := executor.New(
 		executor.Name(j.command),
 		executor.Args(j.args),
-		executor.Stdout(os.Stdout),
+		executor.Stdout(stdOut),
 		executor.Stderr(os.Stderr),
 	)
 
